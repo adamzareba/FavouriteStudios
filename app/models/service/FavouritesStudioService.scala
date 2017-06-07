@@ -1,17 +1,17 @@
-package models.dao
+package models.service
 
 import anorm._
 import models.FavouriteStudio
 import play.api.Play.current
 import play.api.db._
 
-object FavouritesStudioDAO {
+object FavouritesStudioService {
 
   def create(favourite: FavouriteStudio) =
     DB.withConnection { implicit connection =>
       SQL(
         """
-          |INSERT IGNORE INTO favouriteStudio(userId, studioId)
+          |INSERT IGNORE INTO favouriteStudio(USER_ID, STUDIO_ID)
           |VALUES
           |   ({userId}, {studioId});
         """.stripMargin).on(
@@ -25,7 +25,7 @@ object FavouritesStudioDAO {
       SQL(
         """
           |DELETE FROM favouriteStudio
-          |WHERE userId = {userId} AND studioId = {studioId}
+          |WHERE USER_ID = {userId} AND STUDIO_ID = {studioId}
           |LIMIT 1;
         """.stripMargin).on(
         "userId" -> favourite.userId,
@@ -40,7 +40,7 @@ object FavouritesStudioDAO {
         """
           |SELECT COUNT(*) as numMatches
           |FROM favouriteStudio
-          |WHERE userId = {userId} AND studioId = {studioId};
+          |WHERE USER_ID = {userId} AND STUDIO_ID = {studioId};
         """.stripMargin).on(
         "userId" -> favourite.userId,
         "studioId" -> favourite.studioId
@@ -54,15 +54,15 @@ object FavouritesStudioDAO {
     DB.withConnection { implicit connection =>
       val results = SQL(
         """
-          |SELECT userId, studioId
+          |SELECT USER_ID, STUDIO_ID
           |FROM favouriteStudio
-          |WHERE userId = {userId};
+          |WHERE USER_ID = {userId};
         """.stripMargin).on(
         "userId" -> userId
       ).apply()
 
       results.map { row =>
-        FavouriteStudio(row[Long]("userId"), row[Long]("studioId"))
+        FavouriteStudio(row[Long]("USER_ID"), row[Long]("STUDIO_ID"))
       }.force.toList
     }
   }
