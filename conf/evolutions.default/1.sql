@@ -8,4 +8,3 @@ CREATE TABLE favouriteStudio (
 
 # --- !Downs
 DROP TABLE IF EXISTS favouriteStudio;
-
