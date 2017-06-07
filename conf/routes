@@ -1,0 +1,14 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+POST    /users/:userId/favouriteStudios/:studioId       controllers.FavouriteStudios.add(userId: Long, studioId: Long)
+DELETE  /users/:userId/favouriteStudios/:studioId       controllers.FavouriteStudios.remove(userId: Long, studioId: Long)
+GET     /users/:userId/favouriteStudios/:studioId       controllers.FavouriteStudios.find(userId: Long, studioId: Long)
+GET     /users/:userId/favouriteStudios                 controllers.FavouriteStudios.finaAll(userId: Long)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+    
