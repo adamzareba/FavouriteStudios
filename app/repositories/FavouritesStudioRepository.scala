@@ -42,32 +42,35 @@ class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends Favou
     }
   }
 
-  override def exists(favourite: FavouriteStudio): Boolean = {
-    database.withConnection { implicit connection =>
-      val result = SQL(
-        """
-          SELECT COUNT(*) as numMatches FROM favouriteStudio WHERE USER_ID = {userId} AND STUDIO_ID = {studioId}
-        """).on(
-        "userId" -> favourite.userId,
-        "studioId" -> favourite.studioId
-      ).apply().head
+//  override def exists(favourite: FavouriteStudio): Boolean = {
+//    database.withConnection { implicit connection =>
+//      val result = SQL(
+//        """
+//          SELECT COUNT(*) as numMatches FROM favouriteStudio WHERE USER_ID = {userId} AND STUDIO_ID = {studioId}
+//        """).on(
+//        "userId" -> favourite.userId,
+//        "studioId" -> favourite.studioId
+//      ).apply().head
+//
+//      result[Int]("numMatches") != 0
+//    }
+//  }
+//
+//  override def list(userId: Long): List[FavouriteStudio] = {
+//    database.withConnection { implicit connection =>
+//      val results = SQL(
+//        """
+//          SELECT USER_ID, STUDIO_ID FROM favouriteStudio WHERE USER_ID = {userId}
+//        """).on(
+//        "userId" -> userId
+//      ).apply()
+//
+//      results.map { row =>
+//        FavouriteStudio(row[Long]("USER_ID"), row[Long]("STUDIO_ID"))
+//      }.force.toList
+//    }
+//  }
+  override def exists(favourite: FavouriteStudio): Boolean = ???
 
-      result[Int]("numMatches") != 0
-    }
-  }
-
-  override def list(userId: Long): List[FavouriteStudio] = {
-    database.withConnection { implicit connection =>
-      val results = SQL(
-        """
-          SELECT USER_ID, STUDIO_ID FROM favouriteStudio WHERE USER_ID = {userId}
-        """).on(
-        "userId" -> userId
-      ).apply()
-
-      results.map { row =>
-        FavouriteStudio(row[Long]("USER_ID"), row[Long]("STUDIO_ID"))
-      }.force.toList
-    }
-  }
+  override def list(userId: Long): List[FavouriteStudio] = ???
 }

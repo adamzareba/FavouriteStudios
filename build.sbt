@@ -8,7 +8,7 @@ scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq( jdbc , cache , ws   , specs2 % Test )
 
-libraryDependencies += "com.typesafe.play" %% "anorm" % "2.5.0"
+libraryDependencies += "com.typesafe.play" %% "anorm" % "2.5.2"
 
 libraryDependencies += evolutions
 
