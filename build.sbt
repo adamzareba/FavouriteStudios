@@ -14,6 +14,12 @@ libraryDependencies += evolutions
 
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.36"
 
+libraryDependencies += "io.swagger" %% "swagger-play2" % "1.5.3"
+
+libraryDependencies += "org.webjars" %% "webjars-play" % "2.5.0-4"
+
+libraryDependencies += "org.webjars" % "swagger-ui" % "2.2.0"
+
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"  
