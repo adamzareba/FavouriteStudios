@@ -1,69 +1,30 @@
 package models.service
 
-import anorm._
+import javax.inject.Inject
+
 import models.FavouriteStudio
-import play.api.Play.current
-import play.api.db._
+import models.repository.FavouritesStudioRepository
 
-object FavouritesStudioService {
+class FavouritesStudioService @Inject()(favouritesStudioRepository: FavouritesStudioRepository) {
 
-  def create(favourite: FavouriteStudio) =
-    DB.withConnection { implicit connection =>
-      SQL(
-        """
-          |INSERT IGNORE INTO favouriteStudio(USER_ID, STUDIO_ID)
-          |VALUES
-          |   ({userId}, {studioId});
-        """.stripMargin).on(
-        "userId" -> favourite.userId,
-        "studioId" -> favourite.studioId
-      ).executeInsert()
-    }
+  def addFavourite(userId: Long, studioId: Long): FavouriteStudio = {
+    val favourite = FavouriteStudio(userId, studioId)
+    favouritesStudioRepository.create(favourite)
 
-  def delete(favourite: FavouriteStudio) = {
-    DB.withConnection { implicit connection =>
-      SQL(
-        """
-          |DELETE FROM favouriteStudio
-          |WHERE USER_ID = {userId} AND STUDIO_ID = {studioId}
-          |LIMIT 1;
-        """.stripMargin).on(
-        "userId" -> favourite.userId,
-        "studioId" -> favourite.studioId
-      ).executeUpdate()
-    }
+    favourite
   }
 
-  def exists(favourite: FavouriteStudio): Boolean = {
-    DB.withConnection { implicit connection =>
-      val result = SQL(
-        """
-          |SELECT COUNT(*) as numMatches
-          |FROM favouriteStudio
-          |WHERE USER_ID = {userId} AND STUDIO_ID = {studioId};
-        """.stripMargin).on(
-        "userId" -> favourite.userId,
-        "studioId" -> favourite.studioId
-      ).apply().head
+  def delete(userId: Long, studioId: Long) = favouritesStudioRepository.delete(FavouriteStudio(userId, studioId))
 
-      result[Int]("numMatches") != 0
-    }
+  def findAllByUser(userId: Long): List[FavouriteStudio] = favouritesStudioRepository.index(userId)
+
+  def find(userId: Long, studioId: Long): Option[FavouriteStudio] = {
+    val favourite = FavouriteStudio(userId, studioId)
+
+    if (favouritesStudioRepository.exists(favourite))
+      Some(favourite)
+    else
+      None
   }
 
-  def index(userId: Long): List[FavouriteStudio] = {
-    DB.withConnection { implicit connection =>
-      val results = SQL(
-        """
-          |SELECT USER_ID, STUDIO_ID
-          |FROM favouriteStudio
-          |WHERE USER_ID = {userId};
-        """.stripMargin).on(
-        "userId" -> userId
-      ).apply()
-
-      results.map { row =>
-        FavouriteStudio(row[Long]("USER_ID"), row[Long]("STUDIO_ID"))
-      }.force.toList
-    }
-  }
 }
