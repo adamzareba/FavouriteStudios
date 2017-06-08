@@ -1,4 +1,5 @@
 # --- !Ups
+
 CREATE TABLE favouriteStudio (
 	  USER_ID BIGINT NOT NULL,
     STUDIO_ID BIGINT NOT NULL,
@@ -7,4 +8,5 @@ CREATE TABLE favouriteStudio (
 );
 
 # --- !Downs
+
 DROP TABLE IF EXISTS favouriteStudio;
