@@ -1,22 +1,22 @@
 package controllers
 
+import javax.inject.Inject
+
 import io.swagger.annotations._
 import models.FavouriteStudio
-import play.api.Play.current
-import play.api.cache.Cached
+import play.api.cache.{CacheApi, Cached}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
-import play.cache.Cache
 
 @Api(value = "Favourite Studios operations")
-class FavouriteStudios extends Controller {
+class FavouriteStudios @Inject()(cache: CacheApi, cached: Cached) extends Controller {
 
   private def clearCaches(userId: Long, studioId: Long) =
     List(
       "find_" + userId + "_" + studioId,
       "finaAll_" + userId
     ).map { key =>
-      Cache.remove(key)
+      cache.remove(key)
     }
 
   @ApiOperation(value = "Add connection User to Studio", response = classOf[FavouriteStudio])
@@ -40,7 +40,7 @@ class FavouriteStudios extends Controller {
 
   @ApiOperation(value = "Find connection between User and Studio", response = classOf[FavouriteStudio])
   def find(@ApiParam(value = "User identifier", required = true) userId: Long,
-           @ApiParam(value = "Studio identifier", required = true) studioId: Long) = Cached("find_" + userId + "_" + studioId) {
+           @ApiParam(value = "Studio identifier", required = true) studioId: Long) = cached("find_" + userId + "_" + studioId) {
     Action {
       val optionFavourite = FavouriteStudio.find(userId, studioId)
 
@@ -52,7 +52,7 @@ class FavouriteStudios extends Controller {
   }
 
   @ApiOperation(value = "Find connection between User and all Studios", response = classOf[List[FavouriteStudio]])
-  def finaAll(@ApiParam(value = "User identifier", required = true) userId: Long) = Cached("findAll_" + userId) {
+  def finaAll(@ApiParam(value = "User identifier", required = true) userId: Long) = cached("findAll_" + userId) {
     Action {
       val allFavourites = FavouriteStudio.findAllByUser(userId)
 
