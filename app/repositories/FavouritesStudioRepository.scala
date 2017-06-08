@@ -23,10 +23,8 @@ class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends Favou
     database.withConnection { implicit connection =>
       SQL(
         """
-          |INSERT IGNORE INTO favouriteStudio(USER_ID, STUDIO_ID)
-          |VALUES
-          |   ({userId}, {studioId});
-        """.stripMargin).on(
+          INSERT IGNORE INTO favouriteStudio(USER_ID, STUDIO_ID) VALUES ({userId}, {studioId})
+        """).on(
         "userId" -> favourite.userId,
         "studioId" -> favourite.studioId
       ).executeInsert()
@@ -36,10 +34,8 @@ class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends Favou
     database.withConnection { implicit connection =>
       SQL(
         """
-          |DELETE FROM favouriteStudio
-          |WHERE USER_ID = {userId} AND STUDIO_ID = {studioId}
-          |LIMIT 1;
-        """.stripMargin).on(
+          DELETE FROM favouriteStudio WHERE USER_ID = {userId} AND STUDIO_ID = {studioId} LIMIT 1
+        """).on(
         "userId" -> favourite.userId,
         "studioId" -> favourite.studioId
       ).executeUpdate()
@@ -50,10 +46,8 @@ class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends Favou
     database.withConnection { implicit connection =>
       val result = SQL(
         """
-          |SELECT COUNT(*) as numMatches
-          |FROM favouriteStudio
-          |WHERE USER_ID = {userId} AND STUDIO_ID = {studioId};
-        """.stripMargin).on(
+          SELECT COUNT(*) as numMatches FROM favouriteStudio WHERE USER_ID = {userId} AND STUDIO_ID = {studioId}
+        """).on(
         "userId" -> favourite.userId,
         "studioId" -> favourite.studioId
       ).apply().head
@@ -66,10 +60,8 @@ class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends Favou
     database.withConnection { implicit connection =>
       val results = SQL(
         """
-          |SELECT USER_ID, STUDIO_ID
-          |FROM favouriteStudio
-          |WHERE USER_ID = {userId};
-        """.stripMargin).on(
+          SELECT USER_ID, STUDIO_ID FROM favouriteStudio WHERE USER_ID = {userId}
+        """).on(
         "userId" -> userId
       ).apply()
 
