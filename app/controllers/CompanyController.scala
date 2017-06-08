@@ -21,4 +21,12 @@ class CompanyController @Inject()(companyService: CompanyService) extends Contro
     val companies = companyService.findAll
     Ok(Json.toJson(companies))
   }
+
+  @ApiOperation(value = "Create company", response = classOf[Void])
+  def create = Action { request =>
+    val json = request.body.asJson.get
+    val company = json.as[Company]
+    companyService.create(company)
+    Ok(Json.obj())
+  }
 }
