@@ -4,13 +4,13 @@ import javax.inject.Inject
 
 import io.swagger.annotations._
 import models.FavouriteStudio
-import models.service.FavouritesStudioService
+import service.FavouritesStudioService
 import play.api.cache.{CacheApi, Cached}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 
 @Api(value = "Favourite Studios operations")
-class FavouriteStudios @Inject()(cache: CacheApi, cached: Cached, favouriteStudioService: FavouritesStudioService) extends Controller {
+class FavouriteStudioController @Inject()(cache: CacheApi, cached: Cached, favouriteStudioService: FavouritesStudioService) extends Controller {
 
   private def clearCaches(userId: Long, studioId: Long) =
     List(

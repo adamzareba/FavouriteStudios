@@ -1,4 +1,4 @@
-package models.repository
+package repository
 
 import javax.inject.Inject
 
@@ -6,9 +6,20 @@ import anorm._
 import models.FavouriteStudio
 import play.api.db._
 
-class FavouritesStudioRepository @Inject()(database: Database) {
+trait FavouritesStudioRepository {
 
-  def create(favourite: FavouriteStudio) =
+  def create(favourite: FavouriteStudio)
+
+  def delete(favourite: FavouriteStudio)
+
+  def exists(favourite: FavouriteStudio): Boolean
+
+  def index(userId: Long): List[FavouriteStudio]
+}
+
+class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends FavouritesStudioRepository {
+
+  override def create(favourite: FavouriteStudio) =
     database.withConnection { implicit connection =>
       SQL(
         """
@@ -21,7 +32,7 @@ class FavouritesStudioRepository @Inject()(database: Database) {
       ).executeInsert()
     }
 
-  def delete(favourite: FavouriteStudio) = {
+  override def delete(favourite: FavouriteStudio) = {
     database.withConnection { implicit connection =>
       SQL(
         """
@@ -35,7 +46,7 @@ class FavouritesStudioRepository @Inject()(database: Database) {
     }
   }
 
-  def exists(favourite: FavouriteStudio): Boolean = {
+  override def exists(favourite: FavouriteStudio): Boolean = {
     database.withConnection { implicit connection =>
       val result = SQL(
         """
@@ -51,7 +62,7 @@ class FavouritesStudioRepository @Inject()(database: Database) {
     }
   }
 
-  def index(userId: Long): List[FavouriteStudio] = {
+  override def index(userId: Long): List[FavouriteStudio] = {
     database.withConnection { implicit connection =>
       val results = SQL(
         """
