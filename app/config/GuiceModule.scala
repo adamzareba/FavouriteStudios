@@ -1,8 +1,8 @@
 package config
 
 import com.google.inject.AbstractModule
-import repository.{FavouritesStudioRepository, FavouritesStudioRepositoryImpl}
-import service.{FavouritesStudioService, FavouritesStudioServiceImpl}
+import repositories.{FavouritesStudioRepository, FavouritesStudioRepositoryImpl}
+import services.{FavouritesStudioService, FavouritesStudioServiceImpl}
 import play.api.{Configuration, Environment}
 
 class GuiceModule(environment: Environment, configuration: Configuration) extends AbstractModule {

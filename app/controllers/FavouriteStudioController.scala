@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import io.swagger.annotations._
 import models.FavouriteStudio
-import service.FavouritesStudioService
+import services.FavouritesStudioService
 import play.api.cache.{CacheApi, Cached}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}

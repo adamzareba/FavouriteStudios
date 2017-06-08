@@ -1,9 +1,9 @@
-package service
+package services
 
 import javax.inject.Inject
 
 import models.FavouriteStudio
-import repository.FavouritesStudioRepository
+import repositories.FavouritesStudioRepository
 
 trait FavouritesStudioService {
 
@@ -27,7 +27,7 @@ class FavouritesStudioServiceImpl @Inject()(favouritesStudioRepository: Favourit
 
   override def delete(userId: Long, studioId: Long) = favouritesStudioRepository.delete(FavouriteStudio(userId, studioId))
 
-  override def findAllByUser(userId: Long): List[FavouriteStudio] = favouritesStudioRepository.index(userId)
+  override def findAllByUser(userId: Long): List[FavouriteStudio] = favouritesStudioRepository.list(userId)
 
   override def find(userId: Long, studioId: Long): Option[FavouriteStudio] = {
     val favourite = FavouriteStudio(userId, studioId)

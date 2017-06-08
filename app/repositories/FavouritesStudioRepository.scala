@@ -1,4 +1,4 @@
-package repository
+package repositories
 
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ trait FavouritesStudioRepository {
 
   def exists(favourite: FavouriteStudio): Boolean
 
-  def index(userId: Long): List[FavouriteStudio]
+  def list(userId: Long): List[FavouriteStudio]
 }
 
 class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends FavouritesStudioRepository {
@@ -62,7 +62,7 @@ class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends Favou
     }
   }
 
-  override def index(userId: Long): List[FavouriteStudio] = {
+  override def list(userId: Long): List[FavouriteStudio] = {
     database.withConnection { implicit connection =>
       val results = SQL(
         """
