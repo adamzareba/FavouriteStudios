@@ -1,0 +1,11 @@
+# --- !Ups
+
+CREATE TABLE department (
+  ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  NAME VARCHAR(255),
+  COMPANY_ID BIGINT
+);
+
+# --- !Downs
+
+DROP TABLE IF EXISTS department;

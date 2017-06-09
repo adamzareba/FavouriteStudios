@@ -1,0 +1,10 @@
+# --- !Ups
+
+CREATE TABLE company (
+  ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  NAME VARCHAR(255)
+);
+
+# --- !Downs
+
+DROP TABLE IF EXISTS company;
