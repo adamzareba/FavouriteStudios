@@ -43,18 +43,37 @@ class CompanyRepositoryImpl @Inject()(database: Database) extends CompanyReposit
     }
   }
 
-  override def create(company: Company)= {
+  override def create(company: Company) = {
     database.withConnection { implicit connection =>
       SQL(
         """
-          INSERT IGNORE INTO company(NAME) VALUES ({name})
+          INSERT INTO company(NAME) VALUES ({name})
         """).on(
         "name" -> company.name
       ).executeInsert()
     }
   }
 
-  override def update(company: Company): Unit = ???
+  override def update(company: Company) = {
+    database.withConnection { implicit connection =>
+      SQL(
+        """
+          UPDATE company SET NAME = {name} WHERE ID = {id}
+        """).on(
+        "id" -> company.id,
+        "name" -> company.name
+      ).executeUpdate()
+    }
+  }
 
-  override def delete(id: Long): Unit = ???
+  override def delete(id: Long) = {
+    database.withConnection { implicit connection =>
+      SQL(
+        """
+          DELETE FROM company WHERE ID = {id}
+        """).on(
+        "id" -> id
+      ).executeUpdate()
+    }
+  }
 }

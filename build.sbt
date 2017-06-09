@@ -4,11 +4,11 @@ version := "1.0"
 
 lazy val `favouritestudios` = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.11"
 
 libraryDependencies ++= Seq( jdbc , cache , ws   , specs2 % Test )
 
-libraryDependencies += "com.typesafe.play" %% "anorm" % "2.5.2"
+libraryDependencies += "com.typesafe.play" %% "anorm" % "2.5.3"
 
 libraryDependencies += evolutions
 
@@ -18,7 +18,7 @@ libraryDependencies += "io.swagger" %% "swagger-play2" % "1.5.3"
 
 libraryDependencies += "org.webjars" %% "webjars-play" % "2.5.0-4"
 
-libraryDependencies += "org.webjars" % "swagger-ui" % "2.2.0"
+libraryDependencies += "org.webjars" % "swagger-ui" % "3.0.10"
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
 

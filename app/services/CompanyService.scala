@@ -12,6 +12,10 @@ trait CompanyService {
   def findAll: List[Company]
 
   def create(company: Company)
+
+  def update(company: Company)
+
+  def delete(id: Long)
 }
 
 class CompanyServiceImpl @Inject()(companyRepository: CompanyRepository) extends CompanyService {
@@ -26,5 +30,13 @@ class CompanyServiceImpl @Inject()(companyRepository: CompanyRepository) extends
 
   override def create(company: Company) = {
     companyRepository.create(company)
+  }
+
+  override def update(company: Company) = {
+    companyRepository.update(company)
+  }
+
+  override def delete(id: Long) = {
+    companyRepository.delete(id)
   }
 }

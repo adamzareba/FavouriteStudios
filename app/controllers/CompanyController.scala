@@ -23,10 +23,25 @@ class CompanyController @Inject()(companyService: CompanyService) extends Contro
   }
 
   @ApiOperation(value = "Create company", response = classOf[Void])
+  @ApiParam(value = "Company identifier", required = true)
   def create = Action { request =>
     val json = request.body.asJson.get
     val company = json.as[Company]
     companyService.create(company)
-    Ok(Json.obj())
+    Ok
+  }
+
+  @ApiOperation(value = "Update company", response = classOf[Void])
+  def update = Action { request =>
+    val json = request.body.asJson.get
+    val company = json.as[Company]
+    companyService.update(company)
+    Ok
+  }
+
+  @ApiOperation(value = "Remove company", response = classOf[Void])
+  def delete(@ApiParam(value = "Company identifier", required = true) id: Long) = Action {
+    companyService.delete(id)
+    Ok
   }
 }

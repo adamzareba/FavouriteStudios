@@ -17,6 +17,8 @@ GET           /users/:userId/favouriteStudios                  controllers.Favou
 GET           /company/:id                                     controllers.CompanyController.find(id: Long)
 GET           /company/                                        controllers.CompanyController.findAll
 POST          /company/                                        controllers.CompanyController.create
+PUT           /company/                                        controllers.CompanyController.update
+DELETE        /company/:id                                     controllers.CompanyController.delete(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                    controllers.Assets.at(path="/public", file)
