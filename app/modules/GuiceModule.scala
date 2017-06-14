@@ -1,4 +1,4 @@
-package config
+package modules
 
 import com.google.inject.AbstractModule
 import repositories.{CompanyRepository, CompanyRepositoryImpl, FavouritesStudioRepository, FavouritesStudioRepositoryImpl}

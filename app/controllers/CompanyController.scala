@@ -1,6 +1,7 @@
 package controllers
 
 import com.google.inject.Inject
+import config.DatabaseOperator
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import models.Company
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
