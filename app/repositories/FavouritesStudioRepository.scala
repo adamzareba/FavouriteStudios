@@ -10,13 +10,13 @@ import scala.concurrent.Future
 
 trait FavouritesStudioRepository {
 
-  def create(favourite: FavouriteStudio): Future[Long]
+  def create(favourite: FavouriteStudio)
 
-  def delete(id: Long): Future[Int]
+  def delete(favourite: FavouriteStudio): Future[Int]
 
   def exists(favourite: FavouriteStudio): Boolean
 
-  def list(userId: Long): List[FavouriteStudio]
+  def list(userId: Long): Future[List[FavouriteStudio]]
 }
 
 class FavouritesStudioRepositoryImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends FavouritesStudioRepository {
@@ -28,12 +28,12 @@ class FavouritesStudioRepositoryImpl @Inject()(protected val dbConfigProvider: D
 
   private[repositories] val FavouriteStudios = TableQuery[FavouriteStudioTable]
 
-  override def create(favourite: FavouriteStudio): Future[Long] = {
-    db.run(FavouriteStudios returning FavouriteStudios.map(_.userId) += favourite)
+  override def create(favourite: FavouriteStudio) = {
+    db.run(FavouriteStudios += favourite)
   }
 
-  override def delete(id: Long): Future[Int] = {
-    db.run(FavouriteStudios.filter(_.userId === id).delete)
+  override def delete(favourite: FavouriteStudio): Future[Int] = {
+    db.run(FavouriteStudios.filter(fav => (fav.userId === favourite.userId && fav.studioId === favourite.studioId)).delete)
   }
 
 //  override def exists(favourite: FavouriteStudio): Boolean = {
@@ -49,30 +49,18 @@ class FavouritesStudioRepositoryImpl @Inject()(protected val dbConfigProvider: D
 //      result[Int]("numMatches") != 0
 //    }
 //  }
-//
-//  override def list(userId: Long): List[FavouriteStudio] = {
-//    database.withConnection { implicit connection =>
-//      val results = SQL(
-//        """
-//          SELECT USER_ID, STUDIO_ID FROM favouriteStudio WHERE USER_ID = {userId}
-//        """).on(
-//        "userId" -> userId
-//      ).apply()
-//
-//      results.map { row =>
-//        FavouriteStudio(row[Long]("USER_ID"), row[Long]("STUDIO_ID"))
-//      }.force.toList
-//    }
-//  }
+
   override def exists(favourite: FavouriteStudio): Boolean = ???
 
-  override def list(userId: Long): List[FavouriteStudio] = ???
+  override def list(userId: Long): Future[List[FavouriteStudio]] = {
+    db.run(FavouriteStudios.filter(_.userId === userId).to[List].result)
+  }
 
   private[repositories] class FavouriteStudioTable(tag: Tag) extends Table[FavouriteStudio](tag, "favouriteStudio") {
 
-    def userId = column[Long]("userId")
+    def userId = column[Long]("USER_ID")
 
-    def studioId = column[Long]("studioId")
+    def studioId = column[Long]("STUDIO_ID")
 
     def * = (userId, studioId) <> (FavouriteStudio.tupled, FavouriteStudio.unapply)
 

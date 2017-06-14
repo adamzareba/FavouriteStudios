@@ -4,11 +4,12 @@ import javax.inject.Inject
 
 import io.swagger.annotations._
 import models.FavouriteStudio
-import services.FavouritesStudioService
 import play.api.cache.{CacheApi, Cached}
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Json, Writes}
 import play.api.mvc.{Action, Controller}
+import services.FavouritesStudioService
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 @Api(value = "Favourite Studios operations")
 class FavouriteStudioController @Inject()(cache: CacheApi, cached: Cached, favouriteStudioService: FavouritesStudioService) extends Controller {
@@ -60,10 +61,8 @@ class FavouriteStudioController @Inject()(cache: CacheApi, cached: Cached, favou
 
   @ApiOperation(value = "Find connection between User and all Studios", response = classOf[List[FavouriteStudio]])
   def finaAll(@ApiParam(value = "User identifier", required = true) userId: Long) = cached("findAll_" + userId) {
-    Action {
-      val allFavourites = favouriteStudioService.findAllByUser(userId)
-
-      Ok(Json.obj("result" -> allFavourites))
+    Action.async {
+      favouriteStudioService.findAllByUser(userId).map(allFavourites => Ok(Json.obj("result" -> allFavourites)))
     }
   }
 }
