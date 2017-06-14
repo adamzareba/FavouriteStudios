@@ -15,7 +15,7 @@ trait FavouritesStudioService {
 
   def findAllByUser(userId: Long): Future[List[FavouriteStudio]]
 
-  def find(userId: Long, studioId: Long): Option[FavouriteStudio]
+  def find(userId: Long, studioId: Long): Future[FavouriteStudio]
 }
 
 class FavouritesStudioServiceImpl @Inject()(favouritesStudioRepository: FavouritesStudioRepository) extends FavouritesStudioService {
@@ -31,13 +31,7 @@ class FavouritesStudioServiceImpl @Inject()(favouritesStudioRepository: Favourit
 
   override def findAllByUser(userId: Long): Future[List[FavouriteStudio]] = favouritesStudioRepository.list(userId)
 
-  override def find(userId: Long, studioId: Long): Option[FavouriteStudio] = {
-    val favourite = FavouriteStudio(userId, studioId)
-
-    if (favouritesStudioRepository.exists(favourite))
-      Some(favourite)
-    else
-      None
+  override def find(userId: Long, studioId: Long): Future[FavouriteStudio] = {
+    favouritesStudioRepository.find(userId, studioId)
   }
-
 }

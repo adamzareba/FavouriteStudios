@@ -5,11 +5,11 @@ import javax.inject.Inject
 import io.swagger.annotations._
 import models.FavouriteStudio
 import play.api.cache.{CacheApi, Cached}
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Json, Writes}
 import play.api.mvc.{Action, Controller}
 import services.FavouritesStudioService
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 @Api(value = "Favourite Studios operations")
 class FavouriteStudioController @Inject()(cache: CacheApi, cached: Cached, favouriteStudioService: FavouritesStudioService) extends Controller {
@@ -49,13 +49,8 @@ class FavouriteStudioController @Inject()(cache: CacheApi, cached: Cached, favou
   @ApiOperation(value = "Find connection between User and Studio", response = classOf[FavouriteStudio])
   def find(@ApiParam(value = "User identifier", required = true) userId: Long,
            @ApiParam(value = "Studio identifier", required = true) studioId: Long) = cached("find_" + userId + "_" + studioId) {
-    Action {
-      val optionFavourite = favouriteStudioService.find(userId, studioId)
-
-      optionFavourite match {
-        case None => NotFound(Json.obj("error" -> "NOT_FOUND"))
-        case Some(favourite) => Ok(Json.obj("result" -> favourite))
-      }
+    Action.async {
+      favouriteStudioService.find(userId, studioId).map(favourite => Ok(Json.obj("result" -> favourite)))
     }
   }
 

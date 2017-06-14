@@ -10,11 +10,13 @@ import scala.concurrent.Future
 
 trait FavouritesStudioRepository {
 
+  def find(userId: Long, studioId: Long): Future[FavouriteStudio]
+
   def create(favourite: FavouriteStudio)
 
   def delete(favourite: FavouriteStudio): Future[Int]
 
-  def exists(favourite: FavouriteStudio): Boolean
+  def exists(favourite: FavouriteStudio): Future[Boolean]
 
   def list(userId: Long): Future[List[FavouriteStudio]]
 }
@@ -28,6 +30,10 @@ class FavouritesStudioRepositoryImpl @Inject()(protected val dbConfigProvider: D
 
   private[repositories] val FavouriteStudios = TableQuery[FavouriteStudioTable]
 
+  override def find(userId: Long, studioId: Long): Future[FavouriteStudio] = {
+    db.run((FavouriteStudios.filter(fav => (fav.userId === userId && fav.studioId === studioId))).result.head)
+  }
+
   override def create(favourite: FavouriteStudio) = {
     db.run(FavouriteStudios += favourite)
   }
@@ -36,21 +42,9 @@ class FavouritesStudioRepositoryImpl @Inject()(protected val dbConfigProvider: D
     db.run(FavouriteStudios.filter(fav => (fav.userId === favourite.userId && fav.studioId === favourite.studioId)).delete)
   }
 
-//  override def exists(favourite: FavouriteStudio): Boolean = {
-//    database.withConnection { implicit connection =>
-//      val result = SQL(
-//        """
-//          SELECT COUNT(*) as numMatches FROM favouriteStudio WHERE USER_ID = {userId} AND STUDIO_ID = {studioId}
-//        """).on(
-//        "userId" -> favourite.userId,
-//        "studioId" -> favourite.studioId
-//      ).apply().head
-//
-//      result[Int]("numMatches") != 0
-//    }
-//  }
-
-  override def exists(favourite: FavouriteStudio): Boolean = ???
+  override def exists(favourite: FavouriteStudio): Future[Boolean] = {
+    db.run(FavouriteStudios.filter(fav => (fav.userId === favourite.userId && fav.studioId === favourite.studioId)).exists.result)
+  }
 
   override def list(userId: Long): Future[List[FavouriteStudio]] = {
     db.run(FavouriteStudios.filter(_.userId === userId).to[List].result)
