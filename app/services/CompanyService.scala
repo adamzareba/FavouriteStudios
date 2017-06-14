@@ -5,11 +5,13 @@ import javax.inject.Inject
 import models.Company
 import repositories.CompanyRepository
 
+import scala.concurrent.Future
+
 trait CompanyService {
 
-  def find(id: Long): Company
+  def find(id: Long): Future[Company]
 
-  def findAll: List[Company]
+  def findAll: Future[List[Company]]
 
   def create(company: Company)
 
@@ -20,11 +22,11 @@ trait CompanyService {
 
 class CompanyServiceImpl @Inject()(companyRepository: CompanyRepository) extends CompanyService {
 
-  override def find(id: Long): Company = {
+  override def find(id: Long): Future[Company] = {
     companyRepository.find(id)
   }
 
-  override def findAll: List[Company] = {
+  override def findAll: Future[List[Company]] = {
     companyRepository.findAll
   }
 
@@ -33,7 +35,7 @@ class CompanyServiceImpl @Inject()(companyRepository: CompanyRepository) extends
   }
 
   override def update(company: Company) = {
-    companyRepository.update(company)
+    companyRepository.update(company.id.get, company)
   }
 
   override def delete(id: Long) = {

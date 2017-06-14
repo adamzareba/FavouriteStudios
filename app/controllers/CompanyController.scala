@@ -3,23 +3,28 @@ package controllers
 import com.google.inject.Inject
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import models.Company
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import services.CompanyService
 
+import scala.concurrent.Future
+
 @Api(value = "Company operations")
 class CompanyController @Inject()(companyService: CompanyService) extends Controller {
 
-  @ApiOperation(value = "Find company", response = classOf[Company])
-  def find(@ApiParam(value = "Company identifier", required = true) id: Long) = Action {
-    val company = companyService.find(id)
-    Ok(Json.toJson(company))
+  implicit val writer = Json.writes[Company]
+
+  implicit val reader = Json.reads[Company]
+
+  @ApiOperation(value = "Find company", response = classOf[Future[Company]])
+  def find(@ApiParam(value = "Company identifier", required = true) id: Long) = Action.async {
+    companyService.find(id).map(company => Ok(Json.toJson(company)))
   }
 
-  @ApiOperation(value = "Find companies", response = classOf[List[Company]])
-  def findAll = Action {
-    val companies = companyService.findAll
-    Ok(Json.toJson(companies))
+  @ApiOperation(value = "Find companies", response = classOf[Future[List[Company]]])
+  def findAll = Action.async {
+    companyService.findAll.map(companies => Ok(Json.toJson(companies)))
   }
 
   @ApiOperation(value = "Create company", response = classOf[Void])

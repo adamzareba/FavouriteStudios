@@ -2,78 +2,61 @@ package repositories
 
 import javax.inject.Inject
 
-import anorm.{Macro, RowParser, SQL}
 import models.Company
-import play.api.db.Database
+import play.api.db.slick.DatabaseConfigProvider
+import slick.driver.JdbcProfile
+
+import scala.concurrent.Future
 
 trait CompanyRepository {
 
-  def find(id: Long): Company
+  def find(id: Long): Future[Company]
 
-  def findAll: List[Company]
+  def findAll: Future[List[Company]]
 
-  def create(company: Company)
+  def create(company: Company): Future[Long]
 
-  def update(company: Company)
+  def update(id: Long, company: Company): Future[Int]
 
-  def delete(id: Long)
+  def delete(id: Long): Future[Int]
 }
 
-class CompanyRepositoryImpl @Inject()(database: Database) extends CompanyRepository {
+class CompanyRepositoryImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends CompanyRepository {
 
-  implicit val parser: RowParser[Company] = Macro.namedParser[Company]
+  val dbConfig = dbConfigProvider.get[JdbcProfile]
+  val db = dbConfig.db
 
-  override def find(id: Long): Company = {
-    database.withConnection { implicit connection =>
-      SQL(
-        """
-          SELECT * FROM company WHERE ID = {id}
-        """).on(
-        "id" -> id
-      ).as(parser.single)
-    }
+  import dbConfig.driver.api._
+
+  private[repositories] val Companies = TableQuery[CompanyTable]
+
+  override def find(id: Long): Future[Company] = {
+    db.run(Companies.filter(_.id === id).result.head)
   }
 
-  override def findAll: List[Company] = {
-    database.withConnection { implicit connection =>
-      SQL(
-        """
-          SELECT * FROM company
-        """).as(parser.*)
-    }
+  override def findAll: Future[List[Company]] = {
+    db.run(Companies.to[List].result)
   }
 
-  override def create(company: Company) = {
-    database.withConnection { implicit connection =>
-      SQL(
-        """
-          INSERT INTO company(NAME) VALUES ({name})
-        """).on(
-        "name" -> company.name
-      ).executeInsert()
-    }
+  override def create(company: Company): Future[Long] = {
+    db.run(Companies returning Companies.map(_.id) += company)
   }
 
-  override def update(company: Company) = {
-    database.withConnection { implicit connection =>
-      SQL(
-        """
-          UPDATE company SET NAME = {name} WHERE ID = {id}
-        """).on(
-        "id" -> company.id,
-        "name" -> company.name
-      ).executeUpdate()
-    }
+  override def update(id: Long, company: Company): Future[Int] = {
+    val companyToUpdate: Company = company.copy(Some(id))
+    db.run(Companies.filter(_.id === id).update(companyToUpdate))
   }
 
-  override def delete(id: Long) = {
-    database.withConnection { implicit connection =>
-      SQL(
-        """
-          DELETE FROM company WHERE ID = {id}
-        """).on(
-        "id" -> id
-      ).executeUpdate()
-    }
+  def delete(id: Long): Future[Int] = {
+    db.run(Companies.filter(_.id === id).delete)
+  }
+
+  private[repositories] class CompanyTable(tag: Tag) extends Table[Company](tag, "company") {
+
+    def id = column[Long]("ID", O.AutoInc, O.PrimaryKey)
+
+    def name = column[String]("NAME")
+
+    def * = (id.?, name) <> (Company.tupled, Company.unapply)
   }
 }

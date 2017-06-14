@@ -2,44 +2,38 @@ package repositories
 
 import javax.inject.Inject
 
-import anorm._
-import models.FavouriteStudio
-import play.api.db._
+import models.{Company, FavouriteStudio}
+import play.api.db.slick.DatabaseConfigProvider
+import slick.driver.JdbcProfile
+
+import scala.concurrent.Future
 
 trait FavouritesStudioRepository {
 
-  def create(favourite: FavouriteStudio)
+  def create(favourite: FavouriteStudio): Future[Long]
 
-  def delete(favourite: FavouriteStudio)
+  def delete(id: Long): Future[Int]
 
   def exists(favourite: FavouriteStudio): Boolean
 
   def list(userId: Long): List[FavouriteStudio]
 }
 
-class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends FavouritesStudioRepository {
+class FavouritesStudioRepositoryImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends FavouritesStudioRepository {
 
-  override def create(favourite: FavouriteStudio) =
-    database.withConnection { implicit connection =>
-      SQL(
-        """
-          INSERT IGNORE INTO favouriteStudio(USER_ID, STUDIO_ID) VALUES ({userId}, {studioId})
-        """).on(
-        "userId" -> favourite.userId,
-        "studioId" -> favourite.studioId
-      ).executeInsert()
-    }
+  val dbConfig = dbConfigProvider.get[JdbcProfile]
+  val db = dbConfig.db
 
-  override def delete(favourite: FavouriteStudio) = {
-    database.withConnection { implicit connection =>
-      SQL(
-        """
-          DELETE FROM favouriteStudio WHERE USER_ID = {userId} AND STUDIO_ID = {studioId} LIMIT 1
-        """).on(
-        "userId" -> favourite.userId,
-        "studioId" -> favourite.studioId
-      ).executeUpdate()
-    }
+  import dbConfig.driver.api._
+
+  private[repositories] val FavouriteStudios = TableQuery[FavouriteStudioTable]
+
+  override def create(favourite: FavouriteStudio): Future[Long] = {
+    db.run(FavouriteStudios returning FavouriteStudios.map(_.userId) += favourite)
+  }
+
+  override def delete(id: Long): Future[Int] = {
+    db.run(FavouriteStudios.filter(_.userId === id).delete)
   }
 
 //  override def exists(favourite: FavouriteStudio): Boolean = {
@@ -73,4 +67,15 @@ class FavouritesStudioRepositoryImpl @Inject()(database: Database) extends Favou
   override def exists(favourite: FavouriteStudio): Boolean = ???
 
   override def list(userId: Long): List[FavouriteStudio] = ???
+
+  private[repositories] class FavouriteStudioTable(tag: Tag) extends Table[FavouriteStudio](tag, "favouriteStudio") {
+
+    def userId = column[Long]("userId")
+
+    def studioId = column[Long]("studioId")
+
+    def * = (userId, studioId) <> (FavouriteStudio.tupled, FavouriteStudio.unapply)
+
+    def ? = (userId.?, studioId.?).shaped.<>({ r => import r._; _1.map(_ => FavouriteStudio.tupled((_1.get, _2.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+  }
 }

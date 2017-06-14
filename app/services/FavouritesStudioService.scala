@@ -25,7 +25,8 @@ class FavouritesStudioServiceImpl @Inject()(favouritesStudioRepository: Favourit
     favourite
   }
 
-  override def delete(userId: Long, studioId: Long) = favouritesStudioRepository.delete(FavouriteStudio(userId, studioId))
+//  override def delete(userId: Long, studioId: Long) = favouritesStudioRepository.delete(FavouriteStudio(userId, studioId))
+  override def delete(userId: Long, studioId: Long) = favouritesStudioRepository.delete(userId)
 
   override def findAllByUser(userId: Long): List[FavouriteStudio] = favouritesStudioRepository.list(userId)
 

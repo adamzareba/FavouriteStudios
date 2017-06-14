@@ -6,11 +6,17 @@ import io.swagger.annotations._
 import models.FavouriteStudio
 import services.FavouritesStudioService
 import play.api.cache.{CacheApi, Cached}
-import play.api.libs.json.Json
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsPath, Json, Writes}
 import play.api.mvc.{Action, Controller}
 
 @Api(value = "Favourite Studios operations")
 class FavouriteStudioController @Inject()(cache: CacheApi, cached: Cached, favouriteStudioService: FavouritesStudioService) extends Controller {
+
+  implicit val favouriteStudioWrites: Writes[FavouriteStudio] = (
+    (JsPath \ "userId").write[Long] and
+      (JsPath \ "studioId").write[Long]
+    ) (unlift(FavouriteStudio.unapply))
 
   private def clearCaches(userId: Long, studioId: Long) =
     List(
