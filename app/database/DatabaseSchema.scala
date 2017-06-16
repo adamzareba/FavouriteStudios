@@ -8,17 +8,11 @@ import slick.driver.MySQLDriver.api._
 
 trait DatabaseSchema {
 
-  implicit val localDateTimeMapping = MappedColumnType.base[LocalDateTime, Timestamp](
-    localDateTime => Timestamp.from(localDateTime.toInstant(ZoneOffset.UTC)),
-    _.toLocalDateTime
-  )
-
   class Companies(tag: Tag) extends Table[Company](tag, "COMPANY") {
     def id = column[Long]("ID", O.AutoInc, O.PrimaryKey)
     def name = column[String]("NAME")
-    def createdOn = column[LocalDateTime]("CREATED_ON")
 
-    def * = (id.?, name, createdOn) <> (Company.tupled, Company.unapply)
+    def * = (id.?, name) <> (Company.tupled, Company.unapply)
   }
 
   val companies = TableQuery[Companies]

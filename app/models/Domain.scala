@@ -1,8 +1,6 @@
 package models
 
-import java.time.LocalDateTime
-
-case class Company(id: Option[Long], name: String, createdOn: LocalDateTime = LocalDateTime.now())
+case class Company(id: Option[Long], name: String)
 
 case class Address(id: Option[Long], zipCode: String, city: String, street: String, houseNumber: String)
 
