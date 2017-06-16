@@ -8,7 +8,7 @@ import slick.driver.MySQLDriver.api._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-object Main extends App with DatabaseSchema with DatabaseOperator {
+object SchemaGenerator extends App with DatabaseSchema with DatabaseOperator {
 
   val config = ConfigFactory.load()
   val db = Database.forConfig("slick.dbs.default.db", config)

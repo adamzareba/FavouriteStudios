@@ -15,7 +15,7 @@ trait DatabaseSchema {
 
   class Companies(tag: Tag) extends Table[Company](tag, "COMPANY") {
     def id = column[Long]("ID", O.AutoInc, O.PrimaryKey)
-    def name = column[String]("ZIP_CODE")
+    def name = column[String]("NAME")
     def createdOn = column[LocalDateTime]("CREATED_ON")
 
     def * = (id.?, name, createdOn) <> (Company.tupled, Company.unapply)
@@ -25,12 +25,12 @@ trait DatabaseSchema {
 
   class Addresses(tag: Tag) extends Table[Address](tag, "ADDRESS") {
     def id = column[Long]("ID", O.AutoInc, O.PrimaryKey)
-    def name = column[String]("ZIP_CODE")
+    def zipCode = column[String]("ZIP_CODE")
     def city = column[String]("CITY")
     def street = column[String]("STREET")
     def houseNumber = column[String]("HOUSE_NUMBER")
 
-    def * = (id.?, name, city, street, houseNumber) <> (Address.tupled, Address.unapply)
+    def * = (id.?, zipCode, city, street, houseNumber) <> (Address.tupled, Address.unapply)
   }
 
   val addresses = TableQuery[Addresses]
@@ -66,7 +66,6 @@ trait DatabaseSchema {
     def addressId = column[Long]("ADDRESS_ID")
     def departmentId = column[Long]("DEPARTMENT_ID")
 
-    foreignKeys
     def address = foreignKey("FK_EMPLOYEE_ADDRESS", addressId, addresses)(_.id)
     def department = foreignKey("FK_EMPLOYEE_DEPARTMENT", departmentId, departments)(_.id)
 
@@ -82,7 +81,7 @@ trait DatabaseSchema {
     def departmentId = column[Long]("DEPARTMENT_ID")
 
     def address = foreignKey("FK_OFFICE_ADDRESS", addressId, addresses)(_.id)
-    def department = foreignKey("FK_OFFICE_DEPARTMENT", departmentId, departments)(_.id)
+    def department = foreignKey("FK_OFFICE_DEPARTMENT", departmentId, departments)(_.id, onUpdate = ForeignKeyAction.Restrict)
 
     def * = (id.?, name, addressId, departmentId) <> (Office.tupled, Office.unapply)
   }
