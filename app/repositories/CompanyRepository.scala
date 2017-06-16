@@ -14,7 +14,7 @@ trait CompanyRepository {
 
   def create(company: Company): Future[Long]
 
-  def update(id: Long, company: Company): Future[Int]
+  def update(company: Company): Future[Int]
 
   def delete(id: Long): Future[Int]
 }
@@ -35,9 +35,9 @@ class CompanyRepositoryImpl extends CompanyRepository with DatabaseSchema {
     db.run(companies returning companies.map(_.id) += company)
   }
 
-  override def update(id: Long, company: Company): Future[Int] = {
-    val companyToUpdate: Company = company.copy(Some(id))
-    db.run(companies.filter(_.id === id).update(companyToUpdate))
+  override def update(company: Company): Future[Int] = {
+    val companyToUpdate: Company = company.copy(company.id)
+    db.run(companies.filter(_.id === company.id).update(companyToUpdate))
   }
 
   def delete(id: Long): Future[Int] = {
