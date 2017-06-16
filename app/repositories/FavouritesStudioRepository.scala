@@ -2,6 +2,8 @@ package repositories
 
 import database.DatabaseSchema
 import models.FavouriteStudio
+import slick.backend.DatabaseConfig
+import slick.driver.MySQLDriver
 import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Future
@@ -21,7 +23,8 @@ trait FavouritesStudioRepository {
 
 class FavouritesStudioRepositoryImpl extends FavouritesStudioRepository with DatabaseSchema {
 
-  val db = Database.forConfig("mysqlProfile")
+  val dbConfig: DatabaseConfig[MySQLDriver] = DatabaseConfig.forConfig("slick.dbs.default")
+  val db = dbConfig.db
 
   override def find(userId: Long, studioId: Long): Future[FavouriteStudio] = {
     db.run((favouriteStudios.filter(fav => (fav.userId === userId && fav.studioId === studioId))).result.head)

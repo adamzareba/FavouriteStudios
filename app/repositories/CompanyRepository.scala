@@ -2,6 +2,8 @@ package repositories
 
 import database.DatabaseSchema
 import models.Company
+import slick.backend.DatabaseConfig
+import slick.driver.MySQLDriver
 import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Future
@@ -21,7 +23,8 @@ trait CompanyRepository {
 
 class CompanyRepositoryImpl extends CompanyRepository with DatabaseSchema {
 
-  val db = Database.forConfig("mysqlProfile")
+  val dbConfig: DatabaseConfig[MySQLDriver] = DatabaseConfig.forConfig("slick.dbs.default")
+  val db = dbConfig.db
 
   override def find(id: Long): Future[Company] = {
     db.run(companies.filter(_.id === id).result.head)
