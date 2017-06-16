@@ -1,5 +1,7 @@
 package models
 
+case class FavouriteStudio(userId: Long, studioId: Long)
+
 case class Company(id: Option[Long], name: String)
 
 case class Address(id: Option[Long], zipCode: String, city: String, street: String, houseNumber: String)

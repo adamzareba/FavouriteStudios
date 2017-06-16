@@ -8,6 +8,16 @@ import slick.driver.MySQLDriver.api._
 
 trait DatabaseSchema {
 
+  class FavouriteStudios(tag: Tag) extends Table[FavouriteStudio](tag, "FAVOURITESTUDIO") {
+    def userId = column[Long]("USER_ID")
+    def studioId = column[Long]("STUDIO_ID")
+
+    def * = (userId, studioId) <> (FavouriteStudio.tupled, FavouriteStudio.unapply)
+    def ? = (userId.?, studioId.?).shaped.<>({ r => import r._; _1.map(_ => FavouriteStudio.tupled((_1.get, _2.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+  }
+
+  val favouriteStudios = TableQuery[FavouriteStudios]
+
   class Companies(tag: Tag) extends Table[Company](tag, "COMPANY") {
     def id = column[Long]("ID", O.AutoInc, O.PrimaryKey)
     def name = column[String]("NAME")
@@ -82,5 +92,5 @@ trait DatabaseSchema {
 
   val offices = TableQuery[Offices]
 
-  val allSchemas = companies.schema ++ addresses.schema ++ cars.schema ++ departments.schema ++ employees.schema ++ offices.schema
+  val allSchemas = favouriteStudios.schema ++ companies.schema ++ addresses.schema ++ cars.schema ++ departments.schema ++ employees.schema ++ offices.schema
 }
