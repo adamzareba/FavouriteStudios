@@ -1,10 +1,7 @@
 package repositories
 
-import javax.inject.Inject
-
-import models.{Company, FavouriteStudio}
-import play.api.db.slick.DatabaseConfigProvider
-import slick.driver.JdbcProfile
+import models.FavouriteStudio
+import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Future
 
@@ -21,12 +18,9 @@ trait FavouritesStudioRepository {
   def list(userId: Long): Future[List[FavouriteStudio]]
 }
 
-class FavouritesStudioRepositoryImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends FavouritesStudioRepository {
+class FavouritesStudioRepositoryImpl extends FavouritesStudioRepository {
 
-  val dbConfig = dbConfigProvider.get[JdbcProfile]
-  val db = dbConfig.db
-
-  import dbConfig.driver.api._
+  val db = Database.forConfig("mysqlProfile")
 
   private[repositories] val FavouriteStudios = TableQuery[FavouriteStudioTable]
 

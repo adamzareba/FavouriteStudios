@@ -1,11 +1,8 @@
 package repositories
 
-import javax.inject.Inject
-
 import database.DatabaseSchema
 import models.Company
-import play.api.db.slick.DatabaseConfigProvider
-import slick.driver.JdbcProfile
+import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Future
 
@@ -22,12 +19,9 @@ trait CompanyRepository {
   def delete(id: Long): Future[Int]
 }
 
-class CompanyRepositoryImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends CompanyRepository with DatabaseSchema {
+class CompanyRepositoryImpl extends CompanyRepository with DatabaseSchema {
 
-  val dbConfig = dbConfigProvider.get[JdbcProfile]
-  val db = dbConfig.db
-
-  import dbConfig.driver.api._
+  val db = Database.forConfig("mysqlProfile")
 
   override def find(id: Long): Future[Company] = {
     db.run(companies.filter(_.id === id).result.head)

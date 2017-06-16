@@ -11,7 +11,7 @@ import scala.concurrent.duration.Duration
 object SchemaGenerator extends App with DatabaseSchema with DatabaseOperator {
 
   val config = ConfigFactory.load()
-  val db = Database.forConfig("slick.dbs.default.db", config)
+  val db = Database.forConfig("mysqlProfile", config)
 
   private val future = createSchemaIfNotExists
 
